@@ -100,7 +100,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
       </div>
 
       <div className="flex justify-start">
-      <Search></Search> 
+      <Search sv={searchQuery}></Search> 
       </div>
 
       {data?.Notes.length == 0 ? (
