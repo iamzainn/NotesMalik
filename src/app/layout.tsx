@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import { Navbar } from "@/components/Header"
+import { unstable_noStore as noStore } from "next/cache";
 import prisma from "@/lib/db";
 
 
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 
 
 async function getData(userId: string) {
-
+  noStore();
   if (userId) {
     const data = await prisma.user.findUnique({
       where: {

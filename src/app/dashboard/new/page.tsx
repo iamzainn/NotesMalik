@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import prisma from "@/lib/db";
 import { SubmitButton } from "@/components/Submitbuttons";
+import { TipTapEditor } from "@/components/Tiptap";
 
 export default async function NewNoteRoute() {
   noStore();
@@ -72,6 +73,7 @@ export default async function NewNoteRoute() {
               placeholder="Describe your note as you want"
               required
             />
+            {/* <TipTapEditor setJson={undefined} json={null}></TipTapEditor> */}
           </div>
         </CardContent>
 
