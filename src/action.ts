@@ -54,13 +54,13 @@ export async function postData(jsonContent: { jsonContent: JSONContent | null },
 
 
 
- export async function postDataNote(formData: FormData) {
+ export async function postDataNote(jsonContent: { jsonContent: JSONContent | null }, formData: FormData ){
   const user = await getUser();
 
   if (!user) throw new Error("you are not allowed");
 
   const title = formData.get("title") as string;
-  const description = formData.get("description") as string;
+  
   const id = formData.get("id") as string;
 
   await prisma.note.update({
@@ -69,7 +69,7 @@ export async function postData(jsonContent: { jsonContent: JSONContent | null },
       userId: user.id,
     },
     data: {
-      description: description,
+      description: jsonContent ?? "",
       title: title,
     },
   });

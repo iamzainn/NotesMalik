@@ -33,22 +33,14 @@ export default  function DynamicRoute({
   params: { id: string };
 }) 
   
+
 {
   const [note ,setNote] = useState({} as any);
   const [json, setJson] = useState <null | JSONContent>({
-    "type": "doc",
-    "content": [
-      {
-        "type": "paragraph",
-        "content": [
-          {
-            "type": "text",
-            "text": "Hello, World!"
-          }
-        ]
-      }
-    ]
+    
   });
+
+  const postNote = postDataNote.bind(null, { jsonContent: json });
   
   useEffect(() => {  
      getData({  noteId: params.id }).then((data) => {setNote(data);});
@@ -62,7 +54,7 @@ export default  function DynamicRoute({
   
     
     <Card>
-      <form  action={postDataNote}>
+      <form  action={postNote}>
         <CardHeader>
           <CardTitle>Edit Note</CardTitle>
           <CardDescription>
