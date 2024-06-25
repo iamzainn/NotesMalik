@@ -64,11 +64,15 @@ export function SearchButton() {
     <>
       {pending ? (
        
-          <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+       <Button type="submit" disabled variant="outline" className="px-4 py-2 text-primary-foreground bg-primary rounded-r-lg">
+       <Loader2 className="w-5 h-5  animate-spin"></Loader2>
+     </Button>
         
       ) : (
         
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+        <Button type="submit" variant="outline" className="px-4 py-2 text-primary-foreground bg-primary rounded-r-lg">
+        <SearchIcon className="w-5 h-5" />
+      </Button>
         
       )}
     </>

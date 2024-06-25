@@ -1,12 +1,13 @@
 // components/NoteDetail.tsx
 import React from "react";
 import { Card } from "@/components/ui/card";
+import { RenderToJson } from "./Rendertojson";
 
 export interface NoteDetailProps {
   note: {
     id: string;
     title: string;
-    description: string;
+    description: any;
     createdAt: Date;
   };
 }
@@ -22,7 +23,7 @@ const NoteDetail: React.FC<NoteDetailProps> = ({ note }) => {
           }).format(new Date(note.createdAt))}
         </p>
         <div className="text-lg leading-relaxed whitespace-pre-line">
-          {note.description}
+        <RenderToJson data={note.description.jsonContent} />
         </div>
       </Card>
     </div>

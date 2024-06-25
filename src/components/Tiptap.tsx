@@ -76,7 +76,7 @@ export function TipTapEditor({
 }) {
   const editor = useEditor({
     extensions: [StarterKit],
-    content: json ?? null,
+    content: json ?? "<p>Hello world</p>",
     editorProps: {
       attributes: {
         class: "prose",

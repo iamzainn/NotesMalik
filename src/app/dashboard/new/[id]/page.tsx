@@ -1,4 +1,4 @@
-
+'use client'
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,67 +10,59 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState,useEffect } from "react";
+
 import Link from "next/link";
 
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
-import prisma from "@/lib/db";
+
+
 import { SubmitButton } from "@/components/Submitbuttons";
+import { getData, postDataNote } from "@/action";
+import { TipTapEditor } from "@/components/Tiptap";
+import { JSONContent } from "@tiptap/react";
 
-async function getData({ userId, noteId }: { userId: string; noteId: string }) {
-  noStore();
-  const data = await prisma.note.findUnique({
-    where: {
-      id: noteId,
-      userId: userId,
-    },
-    select: {
-      title: true,
-      description: true,
-      id: true,
-    },
-  });
 
-  return data;
-}
 
-export default async function DynamicRoute({
+
+
+
+export default  function DynamicRoute({
+
   params,
 }: {
   params: { id: string };
-}) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-  const data = await getData({ userId: user?.id as string, noteId: params.id });
+}) 
+  
+{
+  const [note ,setNote] = useState({} as any);
+  const [json, setJson] = useState <null | JSONContent>({
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Hello, World!"
+          }
+        ]
+      }
+    ]
+  });
+  
+  useEffect(() => {  
+     getData({  noteId: params.id }).then((data) => {setNote(data);});
+  },[params.id]);
 
-  async function postData(formData: FormData) {
-    "use server";
+   
 
-    if (!user) throw new Error("you are not allowed");
-
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-
-    await prisma.note.update({
-      where: {
-        id: data?.id,
-        userId: user.id,
-      },
-      data: {
-        description: description,
-        title: title,
-      },
-    });
-
-    revalidatePath("/dashboard");
-
-    return redirect("/dashboard");
-  }
-  return (
+  
+  return (!(note.id) ? <p>loading...</p>:<>
+  
+  
+    
     <Card>
-      <form action={postData}>
+      <form  action={postDataNote}>
         <CardHeader>
           <CardTitle>Edit Note</CardTitle>
           <CardDescription>
@@ -85,18 +77,26 @@ export default async function DynamicRoute({
               type="text"
               name="title"
               placeholder="Title for your note"
-              defaultValue={data?.title}
+              defaultValue={note.title}  
+            />
+
+            <Input
+              required
+              type="text"
+              hidden
+              name="id"
+              placeholder="Title for your note"
+              defaultValue={params.id}  
             />
           </div>
 
           <div className="flex flex-col gap-y-2">
             <Label>Description</Label>
-            <Textarea
-              name="description"
-              placeholder="Describe your note as you want"
-              required
-              defaultValue={data?.description}
-            />
+
+            
+             
+
+            <TipTapEditor setJson={setJson} json={note.description.jsonContent}></TipTapEditor>
           </div>
         </CardContent>
 
@@ -108,5 +108,7 @@ export default async function DynamicRoute({
         </CardFooter>
       </form>
     </Card>
-  );
+  
+  </>)
+
 }

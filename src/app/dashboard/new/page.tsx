@@ -1,4 +1,4 @@
-
+'use client';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,45 +10,25 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import Link from "next/link";
 
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
-import { unstable_noStore as noStore } from "next/cache";
-import prisma from "@/lib/db";
+
+import { useState } from "react";
 import { SubmitButton } from "@/components/Submitbuttons";
 import { TipTapEditor } from "@/components/Tiptap";
+import { postData } from "@/action";
+import { JSONContent } from "@tiptap/react";
 
-export default async function NewNoteRoute() {
-  noStore();
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+export default  function NewNoteRoute() {
+  const [json, setJson] = useState <null | JSONContent>(null);
 
-  async function postData(formData: FormData) {
-    "use server";
-
-    if (!user) {
-      throw new Error("Not authorized");
-    }
-
-    const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-
-    await prisma.note.create({
-      data: {
-        userId: user?.id,
-        description: description,
-        title: title,
-      },
-    });
-
-    return redirect("/dashboard");
-  }
+  const addNote = postData.bind(null, { jsonContent: json });
+  
 
   return (
     <Card>
-      <form action={postData}>
+      <form action={addNote} >
         <CardHeader>
           <CardTitle>New Note</CardTitle>
           <CardDescription>
@@ -68,15 +48,10 @@ export default async function NewNoteRoute() {
 
           <div className="flex flex-col gap-y-2">
             <Label>Description</Label>
-            <Textarea
-              name="description"
-              placeholder="Describe your note as you want"
-              required
-            />
-            {/* <TipTapEditor setJson={undefined} json={null}></TipTapEditor> */}
+            
+            <TipTapEditor setJson={setJson} json={json}></TipTapEditor>
           </div>
         </CardContent>
-
         <CardFooter className="flex justify-between">
           <Button asChild variant="destructive">
             <Link href="/dashboard">Cancel</Link>

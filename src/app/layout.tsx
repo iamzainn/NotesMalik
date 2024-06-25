@@ -4,9 +4,6 @@ import { Inter as FontSans } from "next/font/google"
 import '../styles/globals.css';
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-
-
-
 import { cn } from "@/lib/utils"
 
 
