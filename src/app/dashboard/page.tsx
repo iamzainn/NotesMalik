@@ -1,82 +1,27 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {  File } from "lucide-react";
 
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Edit, File } from "lucide-react";
-import { Card } from "@/components/ui/card";
-
-
-import { revalidatePath, unstable_noStore as noStore } from "next/cache";
-import prisma from "@/lib/db";
-import { TrashDelete } from "@/components/Submitbuttons";
 import Search from "@/components/Search";
-
-
-async function getData(userId: string,query?: string) {
-  noStore();
-
-  const whereClause = query
-  ? {
-      userId: userId,
-      title: {
-        contains: query,
-        mode: "insensitive",
-      },
-    }
-  : { userId: userId } as any;
-  const data = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      Notes: {
-        where: whereClause,
-        select: {
-          title: true,
-          id: true,
-          description: true,
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-
-      Subscription: {
-        select: {
-          status: true,
-        },
-      },
-    },
-  });
-
-  return data;
-}
+import { getAllData } from "@/action";
+import DisplayNotes from "@/components/DisplayNotes";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function DashboardPage({ searchParams }: { searchParams: { search: string } }) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  
+   noStore();
   const searchQuery = searchParams.search || "";
+ 
 
-  const data = await getData(user?.id as string,searchQuery);
+
+  const data =  await getAllData(searchQuery);
+
   
  
   
 
-  async function deleteNote(formData: FormData) {
-    "use server";
-
-    const noteId = formData.get("noteId") as string;
-
-    await prisma.note.delete({
-      where: {
-        id: noteId,
-      },
-    });
-
-    revalidatePath("/dashboard");
-  }
+  
   return (
     <div className="grid items-start gap-y-8">
       <div className="flex items-center justify-between px-2">
@@ -97,6 +42,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
             <Link href="/dashboard/billing">Create a new Note</Link>
           </Button>
         )}
+        
       </div>
 
       <div className="flex justify-start">
@@ -108,7 +54,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <File className="w-10 h-10 text-primary" />
           </div>
-
+           
           <h2 className="mt-6 text-xl font-semibold">
             You dont have any notes created
           </h2>
@@ -128,36 +74,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
           )}
         </div>
       ) : (
-        <div className="flex flex-col gap-y-4">
-          {data?.Notes.map((item) => (
-            <Card
-              key={item.id}
-              className="flex items-center justify-between p-4"
-            >
-              <div>
-                <h2 className="font-semibold text-xl text-primary">
-                <Link href={`/dashboard/${item.id}`}>{item.title}</Link>
-                </h2>
-                <p>
-                  {new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "full",
-                  }).format(new Date(item.createdAt))}
-                </p>
-              </div>
-
-              <div className="flex gap-x-4">
-                <Link href={`/dashboard/new/${item.id}`}>
-                  <Button variant="outline" size="icon">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                </Link>
-                <form action={deleteNote}>
-                  <input type="hidden" name="noteId" value={item.id} />
-                  <TrashDelete />
-                </form>
-              </div>
-            </Card>
-          ))}
+        <div className="flex flex-col gap-y-4" key={Math.random()}>
+          <DisplayNotes Notes={data?.Notes} query={searchQuery}></DisplayNotes>
         </div>
       )}
     </div>

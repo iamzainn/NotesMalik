@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import prisma from "./lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { JSONContent } from "@tiptap/react";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+
 
 const { getUser } = getKindeServerSession();
 
@@ -23,7 +24,7 @@ export async function postData(jsonContent: { jsonContent: JSONContent | null },
 
   try {
     if (!user) {
-      console.log("User not authorized");
+     
       throw new Error("Not authorized");
     }
 
@@ -41,14 +42,14 @@ export async function postData(jsonContent: { jsonContent: JSONContent | null },
       },
     });
 
-    console.log("Note created successfully, redirecting to /dashboard");
+  
 
     revalidatePath("/dashboard");
     redirect("/dashboard");
   } catch (e) {
     console.error("Error in code:", e);
-    // Optionally, rethrow the error or handle it differently
-    throw e; // This ensures the error is properly propagated
+    
+    throw e; 
   }
 }
 
@@ -96,6 +97,72 @@ export async function getData({ noteId }: { noteId: string }) {
       id: true,
     },
   });
+
+  return data;
+}
+
+export async function deleteNote(formData: FormData) {
+  
+
+  const noteId = formData.get("noteId") as string;
+
+  await prisma.note.delete({
+    where: {
+      id: noteId,
+    },
+  });
+
+  revalidatePath("/dashboard");
+}
+
+
+export async function getAllData(query?: string,skip=0) {
+  
+  noStore();
+  const user = await getUser();
+
+
+  const whereClause = query
+  ? {
+      userId: user?.id,
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
+    }
+  : { userId: user?.id } as any;
+  const data = await prisma.user.findUnique({
+    where: {
+      id: user?.id,
+    },
+    select: {
+      Notes: {
+        where: whereClause,
+        select: {
+          title: true,
+          id: true,
+          description: true,
+          createdAt: true,
+        },
+        take:10,
+        skip:skip
+        ,
+        orderBy: {
+          createdAt: "desc",
+          
+        },
+        
+      },
+
+      Subscription: {
+        select: {
+          status: true,
+        },
+      },
+    },
+  });
+
+
 
   return data;
 }
