@@ -20,7 +20,7 @@ export async function GET() {
   
     
   
-  
+
   
   
   
@@ -66,9 +66,11 @@ export async function GET() {
   
     return NextResponse.redirect(
       
-         "http://localhost:3000/dashboard"
+      process.env.NODE_ENV === "production"
+      ? (process.env.PRODUCTION_URL as string)
+      : "http://localhost:3000/dashboard",
         
-    );
+    )
   }
     catch(e){
      console.log("unable to logged in " + e);
