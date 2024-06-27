@@ -4,9 +4,12 @@ import { stripe } from "@/lib/Stripe";
 import prisma from "@/lib/db";
 import { headers } from "next/headers";
 import Stripe from "stripe";
+import { unstable_noStore as noStore } from "next/cache";
 
 
 export async function POST(req: Request) {
+  noStore();
+  console.log("webhook called");
   const body = await req.text();
 
   const signature = headers().get("Stripe-Signature") as string;
@@ -70,5 +73,5 @@ export async function POST(req: Request) {
     });
   }
 
-  return new Response(null, { status: 200 });
+  return new Response("Subscription succecced", { status: 200 });
 }

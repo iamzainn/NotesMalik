@@ -5,6 +5,7 @@ import prisma from "./lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { JSONContent } from "@tiptap/react";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
+import { getStripeSession } from "./lib/Stripe";
 
 
 const { getUser } = getKindeServerSession();
@@ -165,4 +166,34 @@ export async function getAllData(query?: string,skip=0) {
 
 
   return data;
+}
+
+
+export async function createSubscription() {
+  noStore();
+  const user = await getUser();
+  //  console.log("subscription")
+  const dbUser = await prisma.user.findUnique({
+    where: {
+      id: user?.id,
+    },
+    select: {
+      stripeCustomerId: true,
+    },
+  });
+
+  if (!dbUser?.stripeCustomerId) {
+    throw new Error("Unable to get customer id");
+  }
+
+  const subscriptionUrl = await getStripeSession({
+    customerId: dbUser.stripeCustomerId,
+    domainUrl:
+      process.env.NODE_ENV == "production"
+        ? (process.env.PRODUCTION_URL as string)
+        : "http://localhost:3000",
+    priceId: process.env.STRIPE_PRICE_ID as string,
+  });
+
+  return redirect(subscriptionUrl);
 }

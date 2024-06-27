@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 
-import {  unstable_noStore as noStore } from "next/cache";
+
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
@@ -17,9 +17,11 @@ import {
   StripePortal,
   StripeSubscriptionCreationButton,
 } from "@/components/Submitbuttons";
+import {unstable_noStore as noStore} from 'next/cache';
 
 import prisma from "@/lib/db";
 import { getStripeSession, stripe } from "@/lib/Stripe";
+import { createSubscription } from "@/action";
 
 const featureItems = [
   { name: "Lorem Ipsum something" },
@@ -53,33 +55,7 @@ export default async function BillingPage() {
   const user = await getUser();
   const data = await getData(user?.id as string);
 
-  async function createSubscription() {
-    "use server";
-
-    const dbUser = await prisma.user.findUnique({
-      where: {
-        id: user?.id,
-      },
-      select: {
-        stripeCustomerId: true,
-      },
-    });
-
-    if (!dbUser?.stripeCustomerId) {
-      throw new Error("Unable to get customer id");
-    }
-
-    const subscriptionUrl = await getStripeSession({
-      customerId: dbUser.stripeCustomerId,
-      domainUrl:
-        process.env.NODE_ENV == "production"
-          ? (process.env.PRODUCTION_URL as string)
-          : "http://localhost:3000",
-      priceId: process.env.STRIPE_PRICE_ID as string,
-    });
-
-    return redirect(subscriptionUrl);
-  }
+  
 
   async function createCustomerPortal() {
     "use server";
@@ -136,7 +112,7 @@ export default async function BillingPage() {
           </div>
 
           <div className="mt-4 flex items-baseline text-6xl font-extrabold">
-            $30 <span className="ml-1 text-2xl text-muted-foreground">/mo</span>
+            $10 <span className="ml-1 text-2xl text-muted-foreground">/mo</span>
           </div>
           <p className="mt-5 text-lg text-muted-foreground">
             Write as many notes as you want for $10 a Month
