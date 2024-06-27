@@ -10,11 +10,16 @@ import { unstable_noStore as noStore } from "next/cache";
 export async function POST(req: Request) {
   noStore();
   console.log("webhook called");
+  
+
   const body = await req.text();
 
   const signature = headers().get("Stripe-Signature") as string;
+  console.log({"signature":signature})
+  console.log(process.env.STRIPE_WEBHOOK_SECRET)
+  console.log({"body":body})
 
-  let event: Stripe.Event;
+  let event;
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -23,8 +28,10 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET as string
     );
   } catch (error: unknown) {
-    return new Response("webhook error", { status: 400 });
+    return new Response("webhook might be invalid", { status: 500 });
   }
+
+
 
   const session = event.data.object as Stripe.Checkout.Session;
 
