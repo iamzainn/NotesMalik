@@ -15,10 +15,8 @@ export async function POST(req: Request) {
   const body = await req.text();
 
   // const signature = headers().get("Stripe-Signature") as string;
-  const signature = req.headers.get("stripe-signature") as string;
-  // console.log({"signature":signature})
-  // console.log(process.env.STRIPE_WEBHOOK_SECRET)
-  // console.log({"body":body})
+  const signature = req.headers.get("Stripe-Signature") as string;
+  
 
   let event;
 
@@ -29,7 +27,7 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET as string
     );
   } catch (error: unknown) {
-    return new Response("webhook might be invalid", { status: 500 });
+    return new Response("webhook error of malik", { status: 400 });
   }
 
 
