@@ -14,10 +14,11 @@ export async function POST(req: Request) {
 
   const body = await req.text();
 
-  const signature = headers().get("Stripe-Signature") as string;
-  console.log({"signature":signature})
-  console.log(process.env.STRIPE_WEBHOOK_SECRET)
-  console.log({"body":body})
+  // const signature = headers().get("Stripe-Signature") as string;
+  const signature = req.headers.get("stripe-signature") as string;
+  // console.log({"signature":signature})
+  // console.log(process.env.STRIPE_WEBHOOK_SECRET)
+  // console.log({"body":body})
 
   let event;
 

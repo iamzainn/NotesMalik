@@ -172,7 +172,7 @@ export async function getAllData(query?: string,skip=0) {
 export async function createSubscription() {
   noStore();
   const user = await getUser();
-  //  console.log("subscription")
+  
   const dbUser = await prisma.user.findUnique({
     where: {
       id: user?.id,
