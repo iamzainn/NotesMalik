@@ -23,7 +23,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         credentialsId: 'github-ssh-key',
-                        url: 'git@github.com:your-org/your-repo.git'
+                        url: 'git@github.com:iamzainn/NotesMalik'
                     ]]
                 ])
             }
