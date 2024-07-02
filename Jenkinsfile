@@ -39,7 +39,7 @@ pipeline {
                     sshagent(['ec2-ssh-key']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ${EC2_SSH_USER}@${EC2_INSTANCE_ID} <<EOF
-                            cd /path/to/your/project
+                            cd /home/ubuntu/next
                             git pull
                             npm install
                             npm run build
