@@ -9,7 +9,7 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        EC2_INSTANCE_ID = 'YOUR_EC2_INSTANCE_ID'
+        EC2_INSTANCE_ID = 'YOUR_EC2_INSTANCE_ID' // If added as a secret text
         EC2_SSH_USER = 'ubuntu'
         EC2_SSH_KEY = credentials('ec2-ssh-key')
         GITHUB_CREDENTIALS = credentials('github-ssh-key')
