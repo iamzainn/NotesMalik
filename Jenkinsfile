@@ -1,10 +1,10 @@
-pipeline {
+ipeline {
     agent any
 
     environment {
         // Define hard-coded environment variables
         DOCKER_HUB_REPO = 'iamzainn'
-        IMAGE_NAME = 'Myapp'
+        IMAGE_NAME = 'my_app'
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Cloning the repository...'
                 // Checkout the repository
-                git 'https://github.com/iamzainn/NotesMalik.git'
+                git  branch :'main' , url: 'https://github.com/iamzainn/NotesMalik.git'
             }
         }
 
