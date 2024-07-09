@@ -1,0 +1,8 @@
+version: '3'
+services:
+  my-app:
+    image: iamzainn/my_app:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
