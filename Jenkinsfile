@@ -46,9 +46,12 @@ ipeline {
 
         stage('Deploying') {
             steps {
-                echo 'Deploying the application...'
-                // Deploy the application using environment variables
-                sh 'docker run -d -p 3000:3000 $DOCKER_HUB_REPO/$IMAGE_NAME:latest'
+                
+                 echo 'Deploying the application...'
+                // Stop and remove the existing Docker Compose containers
+                sh 'docker-compose down'
+                // Start the new Docker Compose containers
+                sh 'docker-compose up -d'
             }
         }
     }
