@@ -20,8 +20,7 @@ pipeline {
             steps {
                 echo 'Building the application...'
                 // Build the application
-                sh 'npm install'
-                sh 'npm run build'
+               
 
                 echo 'Building Docker image...'
                 // Build Docker image using environment variables
