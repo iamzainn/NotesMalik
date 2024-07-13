@@ -1,7 +1,10 @@
 version: '3.3'
 services:
   my-app:
-    image: iamzainn/my_app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
     ports:
       - "3000:3000"
     environment:
