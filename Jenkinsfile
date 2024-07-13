@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_REPO = 'iamzainn'
+        IMAGE_NAME = 'my_app'
+    }
 
     stages {
         stage('Cloning repo') {
@@ -14,9 +18,29 @@ pipeline {
             steps {
                 echo 'Building and deploying the application...'
 
-             
-                sh 'docker compose -f docker-compose.yml down'
-                sh 'docker compose -f docker-compose.yml up -d --build'
+                script {
+                    try {
+                        // Clean up existing Docker containers and images
+                        echo 'Stopping and removing existing containers...'
+                        sh 'docker compose -f docker-compose.yml down --rmi all --volumes --remove-orphans'
+                    } catch (Exception e) {
+                        echo "Error occurred during cleanup:"
+                        echo e.getMessage()
+                        currentBuild.result = 'FAILURE'
+                        return
+                    }
+
+                    try {
+                        // Build and deploy using docker-compose
+                        echo 'Starting new containers...'
+                        sh 'docker compose -f docker-compose.yml up -d --build'
+                    } catch (Exception e) {
+                        echo "Error occurred during deployment:"
+                        echo e.getMessage()
+                        currentBuild.result = 'FAILURE'
+                        return
+                    }
+                }
             }
         }
     }
