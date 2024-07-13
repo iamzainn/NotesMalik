@@ -15,8 +15,8 @@ pipeline {
                 echo 'Building and deploying the application...'
 
              
-                sh 'docker-compose -f docker-compose.yml down'
-                sh 'docker-compose -f docker-compose.yml up -d --build'
+                sh 'docker compose -f docker-compose.yml down'
+                sh 'docker compose -f docker-compose.yml up -d --build'
             }
         }
     }
