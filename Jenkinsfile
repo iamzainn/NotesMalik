@@ -43,7 +43,7 @@ pipeline {
                 script {
                     try {
                         echo 'Attempting to stop the running Docker containers...'
-                        sh 'docker-compose down'
+                        sh 'docker compose down'
                         echo 'Successfully stopped the Docker containers.'
                     } catch (Exception e) {
                         echo 'Error occurred while stopping the Docker containers:'
@@ -54,7 +54,7 @@ pipeline {
 
                     try {
                         echo 'Starting the new Docker Compose containers...'
-                        sh 'docker-compose up -d'
+                        sh 'docker compose up -d'
                         echo 'Successfully started the new Docker Compose containers.'
                     } catch (Exception e) {
                         echo 'Error occurred while starting the new Docker Compose containers:'
